@@ -33,6 +33,8 @@ class User(BaseModel):
     disabled: bool | None = None
 
 
+class UserInDB(User):
+    hashed_password: str
 def fake_decode_token(token):
     return User(
         username=token + "fakedecoded", email="john@example.com", full_name="John Doe"
