@@ -35,6 +35,12 @@ class User(BaseModel):
 
 class UserInDB(User):
     hashed_password: str
+
+
+def fake_hash_password(password: str):
+    return "fakehashed" + password
+
+
 def fake_decode_token(token):
     return User(
         username=token + "fakedecoded", email="john@example.com", full_name="John Doe"
