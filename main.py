@@ -23,7 +23,8 @@ def fake_decode_token(token):
 
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-    pass
+    user = fake_decode_token(token)
+    return user
 
 
 @app.get("/items/")
