@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import Depends, FastAPI
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -25,6 +25,11 @@ def fake_decode_token(token):
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     user = fake_decode_token(token)
     return user
+
+
+@app.post("/token")
+async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    pass
 
 
 @app.get("/users/me")
