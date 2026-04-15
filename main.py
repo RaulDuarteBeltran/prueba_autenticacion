@@ -16,6 +16,12 @@ class User(BaseModel):
     disabled: bool | None = None
 
 
+def fake_decode_token(token):
+    return User(
+        username=token + "fakedecoded", email="john@example.com", full_name="John Doe"
+    )
+
+
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     pass
 
