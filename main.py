@@ -5,10 +5,6 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pwdlib import PasswordHash
 from pydantic import BaseModel
 
-app = FastAPI()
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
 fake_users_db = {
     "johndoe": {
         "username": "johndoe",
@@ -39,6 +35,10 @@ class UserInDB(User):
 
 
 password_hash = PasswordHash.recommended()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+app = FastAPI()
 
 
 # async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
