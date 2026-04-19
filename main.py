@@ -35,6 +35,7 @@ class UserInDB(User):
 
 
 password_hash = PasswordHash.recommended()
+DUMMY_HASH = password_hash.hash("dummypassword")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -47,6 +48,24 @@ def verify_password(plain_password, hashed_password):
 
 def get_password_hash(password):
     return password_hash.hash(password)
+
+
+def get_user(db, username: str):
+    if username in db:
+        user_dict = db[username]
+        return UserInDB(**user_dict)
+
+
+def authenticate_user(fake_db, username: str, password: str):
+    user = get_user(fake_db, username)
+    if not user:
+        # Realizamos una validación dummy, solo para que el servidor siempre tarde
+        # lo mismo
+        verify_password(password, DUMMY_HASH)
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user
 
 
 # async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
