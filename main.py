@@ -5,6 +5,12 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pwdlib import PasswordHash
 from pydantic import BaseModel
 
+# Para generar la llave de la firma utiliza el comando:
+# openssl rand -hex 32
+SECRET_KEY = "59a4bc7ec22e3e31d4ad01f74ee73c96178f243eaedf0d5b6a39af338717f9e3"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
 fake_users_db = {
     "johndoe": {
         "username": "johndoe",
