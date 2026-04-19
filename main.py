@@ -45,6 +45,10 @@ def verify_password(plain_password, hashed_password):
     return password_hash.verify(plain_password, hashed_password)
 
 
+def get_password_hash(password):
+    return password_hash.hash(password)
+
+
 # async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 #     user = fake_decode_token(token)
 #     if not user:
