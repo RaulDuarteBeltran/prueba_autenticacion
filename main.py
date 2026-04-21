@@ -117,14 +117,6 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     return user
 
 
-# async def get_current_active_user(
-#     current_user: Annotated[User, Depends(get_current_user)],
-# ):
-#     if current_user.disabled:
-#         raise HTTPException(status_code=400, detail="Inactive user")
-#     return current_user
-
-
 @app.post("/token")
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
@@ -141,8 +133,8 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> T
     return Token(access_token=access_token, token_type="bearer")
 
 
-# @app.get("/users/me")
-# async def read_users_me(
-#     current_user: Annotated[User, Depends(get_current_active_user)],
-# ):
-#     return current_user
+@app.get("/users/me")
+async def read_users_me(
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    return current_user
