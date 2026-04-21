@@ -4,6 +4,7 @@ from typing import Annotated
 import jwt
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 from pydantic import BaseModel
 
@@ -34,6 +35,10 @@ fake_users_db = {
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+class TokenData(BaseModel):
+    username: str | None = None
 
 
 class User(BaseModel):
@@ -92,15 +97,24 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-# async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-#     user = fake_decode_token(token)
-#     if not user:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Not authenticated",
-#             headers={"WWW-Authenticate": "Bearer"},
-#         )
-#     return user
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except InvalidTokenError:
+        raise credentials_exception
+    user = get_user(fake_users_db, username=token_data.username)  # type: ignore
+    if user is None:
+        raise credentials_exception
+    return user
 
 
 # async def get_current_active_user(
